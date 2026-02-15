@@ -12,7 +12,7 @@ const Bullet = memo(({ bullet }: BulletProps) => {
       className="absolute text-xl will-change-transform"
       style={{
         transform: `translate(${bullet.x - BULLET_SIZE / 2 - 12}px, ${bullet.y - BULLET_SIZE / 2}px)`,
-        color: bullet.explodeFrame !== undefined ? "orange" : "#00ff00",
+        color: bullet.explodeFrame !== undefined ? "orange" : "#9ACD32",
       }}
     >
       {bullet.explodeFrame !== undefined ? "@" : "0"}

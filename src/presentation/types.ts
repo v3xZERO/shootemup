@@ -27,10 +27,9 @@ export type Star = {
   id: number;
   left: string;
   top: string;
-  width: string;
-  height: string;
   opacity: string;
   delay: string;
   color: string;
   duration: string;
+  fontSize: string;
 };

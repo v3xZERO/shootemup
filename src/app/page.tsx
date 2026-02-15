@@ -43,6 +43,7 @@ const Home = () => {
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [upgradeOptions, setUpgradeOptions] = useState<UpgradeOption[]>([]);
   const [autoFire, setAutoFire] = useState(true);
+  const [starOffset, setStarOffset] = useState(0);
   const autoFireRef = useRef(true);
   const bulletCountRef = useRef(1);
 
@@ -99,6 +100,14 @@ const Home = () => {
       x = Math.max(PLAYER_SIZE / 2, Math.min(screenSize.width - PLAYER_SIZE / 2, x));
       y = Math.max(PLAYER_SIZE / 2, Math.min(screenSize.height - PLAYER_SIZE / 2 - 24, y));
       state.playerPos = { x, y };
+
+      const isMovingLeft = keys.has("a") || keys.has("arrowleft");
+      const isMovingRight = keys.has("d") || keys.has("arrowright");
+      let targetOffset = 0;
+      if (isMovingLeft) targetOffset = 30;
+      else if (isMovingRight) targetOffset = -30;
+
+      setStarOffset((prev) => prev + (targetOffset - prev) * 0.1);
 
       state.bullets = state.bullets
         .map((b) => {
@@ -342,7 +351,7 @@ const Home = () => {
 
         {(phase === "playing" || phase === "levelup") && (
           <>
-            <StarsBackground />
+            <StarsBackground horizontalOffset={starOffset} />
             <HUD playerHp={playerHp} bulletCount={bulletCount} />
             {enemies.map((enemy) => (
               <Enemy key={enemy.id} enemy={enemy} />
