@@ -2,7 +2,7 @@ import { memo } from "react";
 import { Star } from "../types";
 
 const generateStars = (count: number, opacity: string, duration: string, fontSize: string, char: string, colorOverride?: string): Star[] => {
-  const colors = colorOverride ? [colorOverride] : (["white", "cyan", "magenta", "yellow"] as const);
+  const colors = colorOverride ? [colorOverride] : (["white", "#80ffff", "#ff80ff", "#ffff80"] as const);
   const durationNum = parseFloat(duration);
   return Array.from({ length: count }, (_, i) => ({
     id: i,
