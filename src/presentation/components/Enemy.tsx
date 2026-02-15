@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Enemy as EnemyType } from "../types";
-import { ENEMY_SIZE } from "../constants";
+import { ENEMY_SIZE, ENEMY_WIDTH } from "../constants";
 
 interface EnemyProps {
   enemy: EnemyType;
@@ -17,7 +17,7 @@ const Enemy = memo(({ enemy }: EnemyProps) => {
     <div
       className="absolute text-2xl font-bold will-change-transform"
       style={{
-        transform: `translate(${enemy.x - ENEMY_SIZE / 2}px, ${enemy.y - ENEMY_SIZE / 2}px)`,
+        transform: `translate(${enemy.x - ENEMY_WIDTH / 2}px, ${enemy.y - ENEMY_SIZE / 2}px)`,
         color: enemy.flashFrame !== undefined ? "red" : enemy.isExploding ? getDeathColor() : "#00ff00",
       }}
     >

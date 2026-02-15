@@ -9,12 +9,12 @@ interface PlayerProps {
 const Player = memo(({ playerPos }: PlayerProps) => {
   return (
     <div
-      className="absolute text-green-500 text-2xl font-bold will-change-transform"
+      className="absolute text-4xl font-bold will-change-transform"
       style={{
         transform: `translate(${playerPos.x - PLAYER_SIZE / 2}px, ${playerPos.y - PLAYER_SIZE / 2}px)`,
       }}
     >
-      △
+      Δ
     </div>
   );
 });

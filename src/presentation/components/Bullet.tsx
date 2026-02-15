@@ -11,7 +11,7 @@ const Bullet = memo(({ bullet }: BulletProps) => {
     <div
       className="absolute text-xl will-change-transform"
       style={{
-        transform: `translate(${bullet.x - BULLET_SIZE / 2}px, ${bullet.y - BULLET_SIZE / 2}px)`,
+        transform: `translate(${bullet.x - BULLET_SIZE / 2 - 12}px, ${bullet.y - BULLET_SIZE / 2}px)`,
         color: bullet.explodeFrame !== undefined ? "orange" : "#00ff00",
       }}
     >

@@ -1,7 +1,7 @@
 import { Star } from "../types";
 
 const generateStars = (count: number, size: string, opacity: string, duration: string): Star[] => {
-  const colors = ["white", "cyan", "fuchsia"] as const;
+  const colors = ["white", "cyan", "fuchsia", "yellow"] as const;
   return Array.from({ length: count }, (_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,

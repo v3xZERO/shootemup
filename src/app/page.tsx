@@ -9,6 +9,7 @@ import {
   BULLET_SPEED,
   SHOOT_INTERVAL,
   ENEMY_SIZE,
+  ENEMY_WIDTH,
   ENEMY_SPEED,
   ENEMY_SLOW_FACTOR,
   ENEMY_HEALTH,
@@ -20,6 +21,7 @@ import {
   upgradeMoveSpeed,
   upgradeShootSpeed,
   upgradeDamage,
+  resetGameStats,
 } from "../presentation/constants";
 import StarsBackground from "../presentation/components/StarsBackground";
 import Player from "../presentation/components/Player";
@@ -27,7 +29,7 @@ import Enemy from "../presentation/components/Enemy";
 import Bullet from "../presentation/components/Bullet";
 import HUD from "../presentation/components/HUD";
 import XPBar from "../presentation/components/XPBar";
-import LevelUpModal from "../presentation/components/LevelUpModal";
+import LevelUpModal, { UpgradeOption, UpgradeType } from "../presentation/components/LevelUpModal";
 import PreGameScreen from "../presentation/components/PreGameScreen";
 
 const Home = () => {
@@ -37,13 +39,20 @@ const Home = () => {
   const [damageLevel, setDamageLevel] = useState(1);
   const [shootSpeedLevel, setShootSpeedLevel] = useState(1);
   const [moveSpeedLevel, setMoveSpeedLevel] = useState(1);
+  const [bulletCount, setBulletCount] = useState(1);
   const [showLevelUp, setShowLevelUp] = useState(false);
+  const [upgradeOptions, setUpgradeOptions] = useState<UpgradeOption[]>([]);
   const [autoFire, setAutoFire] = useState(true);
   const autoFireRef = useRef(true);
+  const bulletCountRef = useRef(1);
 
   useEffect(() => {
     autoFireRef.current = autoFire;
   }, [autoFire]);
+
+  useEffect(() => {
+    bulletCountRef.current = bulletCount;
+  }, [bulletCount]);
 
   const gameState = useRef({
     playerPos: { x: 0, y: 0 } as PlayerPos,
@@ -101,7 +110,7 @@ const Home = () => {
           }
           return { ...b, y: b.y - BULLET_SPEED };
         })
-        .filter((b) => b !== null && (b.explodeFrame === undefined || b.explodeFrame > 0)) as BulletType[];
+        .filter((b) => b !== null && b.y > -BULLET_SIZE && (b.explodeFrame === undefined || b.explodeFrame > 0)) as BulletType[];
 
       state.enemies = state.enemies.map((enemy) => {
         if (enemy.isExploding) return enemy;
@@ -109,7 +118,7 @@ const Home = () => {
         const hitBullet = state.bullets.find(
           (b) =>
             b.explodeFrame === undefined &&
-            Math.abs(b.x - enemy.x) < (BULLET_SIZE + ENEMY_SIZE) / 2 &&
+            Math.abs(b.x - enemy.x) < (BULLET_SIZE + ENEMY_WIDTH) / 2 &&
             Math.abs(b.y - enemy.y) < (BULLET_SIZE + ENEMY_SIZE) / 2
         );
 
@@ -177,11 +186,16 @@ const Home = () => {
 
       if (autoFireRef.current && timestamp - lastAutoShotRef.current > SHOOT_INTERVAL) {
         lastAutoShotRef.current = timestamp;
-        state.bullets.push({
-          x: state.playerPos.x,
-          y: state.playerPos.y - PLAYER_SIZE / 2,
-          id: bulletIdRef.current++,
-        });
+        const count = bulletCountRef.current;
+        const spread = BULLET_SIZE + 4;
+        const startX = state.playerPos.x - ((count - 1) * spread) / 2;
+        for (let i = 0; i < count; i++) {
+          state.bullets.push({
+            x: startX + i * spread,
+            y: state.playerPos.y - PLAYER_SIZE / 2,
+            id: bulletIdRef.current++,
+          });
+        }
       }
 
       setRenderKey((k) => k + 1);
@@ -221,15 +235,63 @@ const Home = () => {
     };
   }, [phase, screenSize]);
 
+  const generateUpgradeOptions = (): UpgradeOption[] => {
+    const allTypes: UpgradeType[] = ["damage", "shootSpeed", "moveSpeed", "bulletCount"];
+    const options: UpgradeOption[] = [];
+    const usedTypes = new Set<UpgradeType>();
+
+    const isMaxed = (type: UpgradeType): boolean => {
+      switch (type) {
+        case "damage":
+          return damageLevel >= MAX_STAT_LEVEL;
+        case "shootSpeed":
+          return shootSpeedLevel >= MAX_STAT_LEVEL;
+        case "moveSpeed":
+          return moveSpeedLevel >= MAX_STAT_LEVEL;
+        case "bulletCount":
+          return bulletCount >= 3;
+      }
+    };
+
+    while (options.length < 3) {
+      const roll = Math.random();
+      const isRare = roll < 0.15;
+      const rarity = isRare ? "rare" : "common";
+
+      let type: UpgradeType;
+      if (isRare) {
+        if (isMaxed("bulletCount")) continue;
+        type = "bulletCount";
+      } else {
+        const availableCommon = allTypes.filter(
+          (t) => t !== "bulletCount" && !usedTypes.has(t) && !isMaxed(t)
+        );
+        if (availableCommon.length === 0) break;
+        type = availableCommon[Math.floor(Math.random() * availableCommon.length)];
+      }
+
+      if (!usedTypes.has(type) && !isMaxed(type)) {
+        usedTypes.add(type);
+        options.push({ type, rarity });
+      }
+    }
+
+    return options;
+  };
+
   useEffect(() => {
     if (gameState.current.pendingLevelUp && phase === "playing") {
       gameState.current.pendingLevelUp = false;
-      setShowLevelUp(true);
-      setPhase("levelup");
+      const options = generateUpgradeOptions();
+      if (options.length > 0) {
+        setUpgradeOptions(options);
+        setShowLevelUp(true);
+        setPhase("levelup");
+      }
     }
-  }, [phase, renderKey]);
+  }, [phase, renderKey, damageLevel, shootSpeedLevel, moveSpeedLevel, bulletCount]);
 
-  const handleUpgrade = (type: "damage" | "shootSpeed" | "moveSpeed") => {
+  const handleUpgrade = (type: UpgradeType) => {
     if (type === "damage" && damageLevel < MAX_STAT_LEVEL) {
       upgradeDamage();
       setDamageLevel((l) => l + 1);
@@ -239,6 +301,8 @@ const Home = () => {
     } else if (type === "moveSpeed" && moveSpeedLevel < MAX_STAT_LEVEL) {
       upgradeMoveSpeed();
       setMoveSpeedLevel((l) => l + 1);
+    } else if (type === "bulletCount" && bulletCount < 3) {
+      setBulletCount((l) => l + 1);
     }
     setShowLevelUp(false);
     setPhase("playing");
@@ -279,7 +343,7 @@ const Home = () => {
         {(phase === "playing" || phase === "levelup") && (
           <>
             <StarsBackground />
-            <HUD playerHp={playerHp} />
+            <HUD playerHp={playerHp} bulletCount={bulletCount} />
             {enemies.map((enemy) => (
               <Enemy key={enemy.id} enemy={enemy} />
             ))}
@@ -296,6 +360,8 @@ const Home = () => {
             damageLevel={damageLevel}
             shootSpeedLevel={shootSpeedLevel}
             moveSpeedLevel={moveSpeedLevel}
+            bulletCount={bulletCount}
+            options={upgradeOptions}
             onUpgrade={handleUpgrade}
             onSkip={() => {
               setShowLevelUp(false);
@@ -333,6 +399,28 @@ const Home = () => {
             }`}
           >
             Auto Fire (F): {autoFire ? "ON" : "OFF"}
+          </button>
+          <button
+            onClick={() => {
+              resetGameStats();
+              gameState.current = {
+                playerPos: { x: screenSize.width / 2, y: screenSize.height * 0.75 },
+                bullets: [],
+                enemies: [],
+                xp: 0,
+                level: 1,
+                playerHp: 3,
+                pendingLevelUp: false,
+              };
+              setDamageLevel(1);
+              setShootSpeedLevel(1);
+              setMoveSpeedLevel(1);
+              setBulletCount(1);
+              setRenderKey((k) => k + 1);
+            }}
+            className="fixed left-4 top-[80%] -translate-y-1/2 px-2 py-4 border border-green-500 text-green-500 text-xs uppercase hover:bg-green-500 hover:text-black"
+          >
+            Reset
           </button>
         </>
       )}
