@@ -28,18 +28,34 @@ body {
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
+ 0%, 100% { opacity: 0.3; }
+ 50% { opacity: 1; }
+}
+
+@keyframes twinkle-subtle {
+  0%, 100% { color: #00ff00; }
+  50% { color: #9ACD32; }
+}
+
+.bullet-twinkle {
+  animation: twinkle-subtle 0.3s ease-in-out infinite;
 }
 
 .star-far {
   animation: fly-down 12s linear infinite, twinkle 1.5s ease-in-out infinite;
+  text-shadow: 0 0 4px currentColor;
 }
 
 .star-mid {
   animation: fly-down 8s linear infinite, twinkle 2s ease-in-out infinite;
+  text-shadow: 0 0 4px currentColor;
 }
 
 .star-near {
   animation: fly-down 5s linear infinite, twinkle 2.5s ease-in-out infinite;
+  text-shadow: 0 0 4px currentColor;
+}
+
+.bullet-twinkle {
+  animation: twinkle-subtle 0.3s ease-in-out infinite;
 }
