@@ -18,7 +18,6 @@ html, body {
 body {
   background: var(--terminal-black);
   color: var(--terminal-green);
-  font-family: "Courier New", Courier, monospace;
   overflow: hidden;
   margin: 0;
 }

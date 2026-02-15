@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Enemy as EnemyType } from "../types";
 import { ENEMY_SIZE } from "../constants";
 
@@ -5,7 +6,7 @@ interface EnemyProps {
   enemy: EnemyType;
 }
 
-const Enemy = ({ enemy }: EnemyProps) => {
+const Enemy = memo(({ enemy }: EnemyProps) => {
   const getDeathColor = () => {
     if ((enemy.explodeFrame ?? 0) > 10) return "yellow";
     if ((enemy.explodeFrame ?? 0) > 5) return "darkorange";
@@ -14,11 +15,9 @@ const Enemy = ({ enemy }: EnemyProps) => {
 
   return (
     <div
-      key={enemy.id}
-      className="absolute text-2xl font-bold"
+      className="absolute text-2xl font-bold will-change-transform"
       style={{
-        left: enemy.x - ENEMY_SIZE / 2,
-        top: enemy.y - ENEMY_SIZE / 2,
+        transform: `translate(${enemy.x - ENEMY_SIZE / 2}px, ${enemy.y - ENEMY_SIZE / 2}px)`,
         color: enemy.flashFrame !== undefined ? "red" : enemy.isExploding ? getDeathColor() : "#00ff00",
       }}
     >
@@ -31,6 +30,8 @@ const Enemy = ({ enemy }: EnemyProps) => {
         : "<*>"}
     </div>
   );
-};
+});
+
+Enemy.displayName = "Enemy";
 
 export default Enemy;

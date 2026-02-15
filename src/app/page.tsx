@@ -103,7 +103,6 @@ const Home = () => {
         })
         .filter((b) => b !== null && (b.explodeFrame === undefined || b.explodeFrame > 0)) as BulletType[];
 
-      const bulletsToRemove = new Set<number>();
       state.enemies = state.enemies.map((enemy) => {
         if (enemy.isExploding) return enemy;
 
@@ -115,7 +114,10 @@ const Home = () => {
         );
 
         if (hitBullet) {
-          bulletsToRemove.add(hitBullet.id);
+          const updatedBullets = state.bullets.map((b) =>
+            b.id === hitBullet.id ? { ...b, explodeFrame: 7 } : b
+          );
+          state.bullets = updatedBullets;
           const newHealth = enemy.health - BULLET_DAMAGE;
 
           const hitPlayerOnBullet =
@@ -151,8 +153,6 @@ const Home = () => {
         }
         return newEnemy;
       }).filter((e) => e.y < screenSize.height + ENEMY_SIZE || e.isExploding);
-
-      state.bullets = state.bullets.filter((b) => !bulletsToRemove.has(b.id));
 
       state.enemies = state.enemies
         .map((e) => {

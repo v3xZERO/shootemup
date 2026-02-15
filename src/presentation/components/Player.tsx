@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { PlayerPos } from "../types";
 import { PLAYER_SIZE } from "../constants";
 
@@ -5,18 +6,19 @@ interface PlayerProps {
   playerPos: PlayerPos;
 }
 
-const Player = ({ playerPos }: PlayerProps) => {
+const Player = memo(({ playerPos }: PlayerProps) => {
   return (
     <div
-      className="absolute text-green-500 text-2xl font-bold"
+      className="absolute text-green-500 text-2xl font-bold will-change-transform"
       style={{
-        left: playerPos.x - PLAYER_SIZE / 2,
-        top: playerPos.y - PLAYER_SIZE / 2,
+        transform: `translate(${playerPos.x - PLAYER_SIZE / 2}px, ${playerPos.y - PLAYER_SIZE / 2}px)`,
       }}
     >
       △
     </div>
   );
-};
+});
+
+Player.displayName = "Player";
 
 export default Player;

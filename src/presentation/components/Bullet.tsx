@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Bullet as BulletType } from "../types";
 import { BULLET_SIZE } from "../constants";
 
@@ -5,20 +6,20 @@ interface BulletProps {
   bullet: BulletType;
 }
 
-const Bullet = ({ bullet }: BulletProps) => {
+const Bullet = memo(({ bullet }: BulletProps) => {
   return (
     <div
-      key={bullet.id}
-      className="absolute text-xl"
+      className="absolute text-xl will-change-transform"
       style={{
-        left: bullet.x - BULLET_SIZE / 2,
-        top: bullet.y - BULLET_SIZE / 2,
+        transform: `translate(${bullet.x - BULLET_SIZE / 2}px, ${bullet.y - BULLET_SIZE / 2}px)`,
         color: bullet.explodeFrame !== undefined ? "orange" : "#00ff00",
       }}
     >
-      {bullet.explodeFrame !== undefined ? "@" : "○"}
+      {bullet.explodeFrame !== undefined ? "@" : "0"}
     </div>
   );
-};
+});
+
+Bullet.displayName = "Bullet";
 
 export default Bullet;
