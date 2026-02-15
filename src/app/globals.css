@@ -27,14 +27,19 @@ body {
   to { transform: translateY(100vh); }
 }
 
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
 .star-far {
-  animation: fly-down 8s linear infinite;
+  animation: fly-down 12s linear infinite, twinkle 1.5s ease-in-out infinite;
 }
 
 .star-mid {
-  animation: fly-down 5s linear infinite;
+  animation: fly-down 8s linear infinite, twinkle 2s ease-in-out infinite;
 }
 
 .star-near {
-  animation: fly-down 3s linear infinite;
+  animation: fly-down 5s linear infinite, twinkle 2.5s ease-in-out infinite;
 }

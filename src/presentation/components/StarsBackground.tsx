@@ -2,6 +2,7 @@ import { Star } from "../types";
 
 const generateStars = (count: number, opacity: string, duration: string, fontSize: string): Star[] => {
   const colors = ["white", "cyan", "magenta", "yellow"] as const;
+  const chars = ["✦", "✶", "✷", "✹"] as const;
   return Array.from({ length: count }, (_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,
@@ -11,6 +12,8 @@ const generateStars = (count: number, opacity: string, duration: string, fontSiz
     color: colors[Math.floor(Math.random() * colors.length)],
     duration,
     fontSize,
+    twinkleDelay: `-${Math.random() * 2}s`,
+    char: chars[Math.floor(Math.random() * chars.length)],
   }));
 };
 
@@ -39,7 +42,7 @@ const StarsBackground = ({ horizontalOffset = 0 }: StarsBackgroundProps) => {
               fontSize: star.fontSize,
             }}
           >
-            *
+            {star.char}
           </span>
         ))}
       </div>
@@ -57,7 +60,7 @@ const StarsBackground = ({ horizontalOffset = 0 }: StarsBackgroundProps) => {
               fontSize: star.fontSize,
             }}
           >
-            *
+            {star.char}
           </span>
         ))}
       </div>
@@ -75,7 +78,7 @@ const StarsBackground = ({ horizontalOffset = 0 }: StarsBackgroundProps) => {
               fontSize: star.fontSize,
             }}
           >
-            *
+            {star.char}
           </span>
         ))}
       </div>

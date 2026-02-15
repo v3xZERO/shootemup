@@ -32,4 +32,6 @@ export type Star = {
   color: string;
   duration: string;
   fontSize: string;
+  twinkleDelay: string;
+  char: string;
 };
